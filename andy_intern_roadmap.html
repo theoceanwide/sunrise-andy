@@ -1,0 +1,193 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,"Anthropic Sans",sans-serif);color:var(--color-text-primary);background:transparent;padding:1rem 0}
+h2.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+.header{margin-bottom:20px}
+.header-top{display:flex;align-items:center;gap:12px;margin-bottom:4px}
+.avatar{width:40px;height:40px;border-radius:50%;background:#CECBF6;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:500;color:#3C3489;flex-shrink:0}
+.name-block h1{font-size:17px;font-weight:500;color:var(--color-text-primary)}
+.name-block p{font-size:12px;color:var(--color-text-secondary);margin-top:2px}
+.tagline{font-size:12px;color:var(--color-text-secondary);background:var(--color-background-secondary);border-radius:20px;padding:4px 12px;display:inline-block;margin-top:4px}
+.progress-bar-wrap{margin:14px 0 20px}
+.pb-label{display:flex;justify-content:space-between;font-size:12px;color:var(--color-text-secondary);margin-bottom:6px}
+.pb-track{height:6px;background:var(--color-background-secondary);border-radius:3px;overflow:hidden}
+.pb-fill{height:100%;background:#7F77DD;border-radius:3px;transition:width 1s ease}
+.section-title{font-size:13px;font-weight:500;color:var(--color-text-secondary);margin:0 0 10px;text-transform:uppercase;letter-spacing:.04em}
+.weeks{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.week-card{border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:12px 14px;background:var(--color-background-primary)}
+.week-head{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.week-badge{font-size:11px;font-weight:500;padding:2px 8px;border-radius:12px}
+.w1 .week-badge{background:#E6F1FB;color:#185FA5}
+.w2 .week-badge{background:#E1F5EE;color:#0F6E56}
+.w3 .week-badge{background:#FAEEDA;color:#854F0B}
+.w4 .week-badge{background:#FBEAF0;color:#993556}
+.week-title{font-size:13px;font-weight:500}
+.task-list{list-style:none;display:flex;flex-direction:column;gap:7px}
+.task-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;line-height:1.45;color:var(--color-text-secondary);cursor:pointer;padding:5px 7px;border-radius:6px;border:0.5px solid transparent;transition:background .15s,border-color .15s}
+.task-item:hover{background:var(--color-background-secondary);border-color:var(--color-border-tertiary)}
+.task-item.done{text-decoration:line-through;opacity:.5}
+.task-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--color-border-secondary);flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:10px;transition:all .15s}
+.task-item.done .task-check{background:#7F77DD;border-color:#7F77DD;color:#fff}
+.tools-section{margin-bottom:24px}
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.tool-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;font-size:12px}
+.tool-name{font-weight:500;margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.tool-use{color:var(--color-text-secondary);font-size:11px;line-height:1.4}
+.prompt-section{margin-bottom:20px}
+.prompt-box{background:var(--color-background-secondary);border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-tertiary);padding:12px 14px}
+.prompt-label{font-size:11px;font-weight:500;color:var(--color-text-secondary);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.prompt-text{font-size:11px;font-family:var(--font-mono,monospace);color:var(--color-text-primary);line-height:1.6;white-space:pre-wrap}
+.copy-btn{margin-top:8px;font-size:11px;padding:4px 12px;border-radius:var(--border-radius-md);border:0.5px solid var(--color-border-secondary);background:transparent;cursor:pointer;color:var(--color-text-secondary)}
+.copy-btn:hover{background:var(--color-background-primary)}
+.metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:20px}
+.metric-card{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:10px 12px;text-align:center}
+.metric-num{font-size:22px;font-weight:500;color:#534AB7}
+.metric-label{font-size:11px;color:var(--color-text-secondary);margin-top:2px}
+.deliverable-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.del-chip{font-size:11px;background:var(--color-background-secondary);border:0.5px solid var(--color-border-tertiary);border-radius:20px;padding:3px 10px;color:var(--color-text-secondary)}
+.done-chip{background:#E1F5EE;color:#0F6E56;border-color:#5DCAA5}
+.progress-label{font-size:12px;font-weight:500;color:var(--color-text-secondary)}
+@media(max-width:520px){.weeks{grid-template-columns:1fr}.tools-grid{grid-template-columns:1fr 1fr}.metrics-row{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Andy's intern roadmap for Sunrise Senior Daycare — 4-week sprint with task checklist, tools, and a Claude prompt template</h2>
+
+<div class="header">
+  <div class="header-top">
+    <div class="avatar">A</div>
+    <div class="name-block">
+      <h1>Andy's Mission — Sunrise Senior Daycare</h1>
+      <p>Intern · Operations & Technology · Summer 2026</p>
+    </div>
+  </div>
+  <div class="tagline">Goal: Systemize & measure everything by Q4 2026 · Report to Joe (and Grace for daily ops)</div>
+</div>
+
+<div class="metrics-row">
+  <div class="metric-card"><div class="metric-num" id="done-count">0</div><div class="metric-label">Tasks completed</div></div>
+  <div class="metric-card"><div class="metric-num">4</div><div class="metric-label">Weeks to v1 dashboard</div></div>
+  <div class="metric-card"><div class="metric-num">10</div><div class="metric-label">SOPs to document</div></div>
+  <div class="metric-card"><div class="metric-num">5</div><div class="metric-label">KPIs to track live</div></div>
+</div>
+
+<div class="progress-bar-wrap">
+  <div class="pb-label"><span class="progress-label">Sprint progress</span><span id="pct-label">0% complete</span></div>
+  <div class="pb-track"><div class="pb-fill" id="pb" style="width:0%"></div></div>
+</div>
+
+<p class="section-title">4-week sprint</p>
+<div class="weeks">
+
+  <div class="week-card w1">
+    <div class="week-head"><div class="week-badge">Week 1</div><div class="week-title">Microsoft 365 Setup</div></div>
+    <ul class="task-list" id="w1">
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Create Teams channels: Ops, Nursing, Kitchen, Transport, Activities, Admin</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Migrate Google Drive → SharePoint (compliance, SOPs, forms folders)</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Set up compliance folder structure (CDPHE, HHSC, Licensing, Incident Reports)</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Invite all staff to Teams + confirm login for each</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Connect check-in app (checkin.sunriseseniordaycare.com) to SharePoint list</li>
+    </ul>
+  </div>
+
+  <div class="week-card w2">
+    <div class="week-head"><div class="week-badge">Week 2</div><div class="week-title">KPI Dashboard v1</div></div>
+    <ul class="task-list" id="w2">
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Export sample data from myadultdaycare.com (attendance, cost, transport)</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Build Power BI report: Occupancy %, Cost per Client-Day, Labor %, Transport Utilization, Referral Conversion</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Write DAX measures (use Claude prompt below for code)</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Share dashboard with Joe for review + feedback</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Set up Power Automate: daily KPI email to leadership at 7am</li>
+    </ul>
+  </div>
+
+  <div class="week-card w3">
+    <div class="week-head"><div class="week-badge">Week 3</div><div class="week-title">SOP Documentation</div></div>
+    <ul class="task-list" id="w3">
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>SOP #1: Seizure protocol on transport vehicle (priority)</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>SOP #2: Fall incident response — in facility + on bus</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>SOP #3: Client intake & onboarding</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>SOP #4: Daily program schedule + Club Hour</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>SOP #5–10: Kitchen HACCP log, medication administration, elopement, driver checklist, referral intake, billing cycle</li>
+    </ul>
+  </div>
+
+  <div class="week-card w4">
+    <div class="week-head"><div class="week-badge">Week 4</div><div class="week-title">Power Apps Prototypes</div></div>
+    <ul class="task-list" id="w4">
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Build Power App: Bus driver check-in + incident log form → syncs to SharePoint</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Build Power App: Kitchen inventory daily count form</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Build Viva Engage training module (use existing PRD + program schedule as content)</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Competitive research deck: top 5 ADC operators in Denver + Houston markets</li>
+      <li class="task-item" onclick="toggle(this)"><div class="task-check"></div>Present sprint results to Joe + Grace — demo dashboard live</li>
+    </ul>
+  </div>
+
+</div>
+
+<p class="section-title">Tools Andy uses</p>
+<div class="tools-grid tools-section">
+  <div class="tool-card"><div class="tool-name"><i class="ti ti-brand-office" aria-hidden="true"></i>Microsoft 365</div><div class="tool-use">Teams, SharePoint, Power BI, Power Automate, Power Apps — primary platform</div></div>
+  <div class="tool-card"><div class="tool-name"><i class="ti ti-robot" aria-hidden="true"></i>Claude / LLM</div><div class="tool-use">Generate DAX, Power Automate flows, SOP drafts, competitive summaries</div></div>
+  <div class="tool-card"><div class="tool-name"><i class="ti ti-device-desktop" aria-hidden="true"></i>check-in app</div><div class="tool-use">checkin.sunriseseniordaycare.com — data source + integration target</div></div>
+  <div class="tool-card"><div class="tool-name"><i class="ti ti-file-spreadsheet" aria-hidden="true"></i>myadultdaycare.com</div><div class="tool-use">Export CSV data for Power BI. Do not modify — compliance backbone</div></div>
+  <div class="tool-card"><div class="tool-name"><i class="ti ti-brand-github" aria-hidden="true"></i>Zen-S dev team</div><div class="tool-use">Escalate app feature requests + SharePoint/API integrations to Vietnam team</div></div>
+  <div class="tool-card"><div class="tool-name"><i class="ti ti-chart-bar" aria-hidden="true"></i>Power BI</div><div class="tool-use">v1 KPI dashboard — occupancy, cost, transport, referrals</div></div>
+</div>
+
+<p class="section-title">Claude prompt — copy & use today</p>
+<div class="prompt-section">
+  <div class="prompt-box">
+    <div class="prompt-label"><i class="ti ti-terminal" aria-hidden="true" style="font-size:14px"></i>Paste this into Claude or ChatGPT</div>
+    <div class="prompt-text" id="prompt-text">You are an expert Microsoft Power Platform developer for a Medicaid adult day care operator. Using sample CSV data from myadultdaycare.com (columns: date, client_id, attendance_hours, cost_per_client, transport_miles, food_cost), create:
+
+1. Power BI DAX measures for: Occupancy %, Cost per Client-Day, Labor %, Transport Utilization, Referral Conversion.
+2. A complete Power App canvas app for bus driver check-in that logs incidents and syncs to SharePoint.
+3. A Power Automate flow that emails daily KPI summary to leadership at 7am.
+
+Output the full code + step-by-step setup instructions.</div>
+    <button class="copy-btn" onclick="copyPrompt()"><i class="ti ti-copy" aria-hidden="true"></i> Copy prompt</button>
+  </div>
+</div>
+
+<p class="section-title">Deliverables by end of week 4</p>
+<div class="deliverable-row">
+  <div class="del-chip">365 fully migrated</div>
+  <div class="del-chip">Power BI dashboard v1 live</div>
+  <div class="del-chip">10 SOPs in SharePoint</div>
+  <div class="del-chip">Bus incident Power App</div>
+  <div class="del-chip">Kitchen inventory app</div>
+  <div class="del-chip">Daily KPI email automated</div>
+  <div class="del-chip">Competitive research deck</div>
+</div>
+
+<script>
+const totalTasks = document.querySelectorAll('.task-item').length;
+function toggle(el){
+  el.classList.toggle('done');
+  const check = el.querySelector('.task-check');
+  check.textContent = el.classList.contains('done') ? '✓' : '';
+  updateProgress();
+}
+function updateProgress(){
+  const done = document.querySelectorAll('.task-item.done').length;
+  const pct = Math.round((done/totalTasks)*100);
+  document.getElementById('pb').style.width = pct+'%';
+  document.getElementById('pct-label').textContent = pct+'% complete';
+  document.getElementById('done-count').textContent = done;
+}
+function copyPrompt(){
+  const text = document.getElementById('prompt-text').innerText;
+  navigator.clipboard.writeText(text).then(()=>{
+    const btn = document.querySelector('.copy-btn');
+    btn.textContent = '✓ Copied';
+    setTimeout(()=>{ btn.innerHTML = '<i class="ti ti-copy"></i> Copy prompt'; },2000);
+  });
+}
+</script>
+</body>
+</html>
