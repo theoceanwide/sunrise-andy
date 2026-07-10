@@ -1,0 +1,59 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 40% 98%;
+    --foreground: 215 35% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 215 35% 12%;
+    --primary: 214 74% 21%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 30% 94%;
+    --secondary-foreground: 215 35% 12%;
+    --muted: 210 30% 94%;
+    --muted-foreground: 215 15% 45%;
+    --accent: 210 30% 92%;
+    --accent-foreground: 215 35% 12%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --success: 152 60% 32%;
+    --success-foreground: 210 40% 98%;
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 214 74% 21%;
+    --radius: 0.75rem;
+  }
+
+  .dark {
+    --background: 215 35% 8%;
+    --foreground: 210 40% 96%;
+    --card: 215 30% 11%;
+    --card-foreground: 210 40% 96%;
+    --primary: 210 80% 60%;
+    --primary-foreground: 215 35% 10%;
+    --secondary: 215 25% 16%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 215 25% 16%;
+    --muted-foreground: 215 15% 65%;
+    --accent: 215 25% 18%;
+    --accent-foreground: 210 40% 96%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 40% 96%;
+    --success: 152 50% 42%;
+    --success-foreground: 210 40% 96%;
+    --border: 215 25% 20%;
+    --input: 215 25% 20%;
+    --ring: 210 80% 60%;
+  }
+
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
