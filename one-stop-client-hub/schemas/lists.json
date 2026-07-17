@@ -1,0 +1,251 @@
+{
+  "$schema": "https://sunrise.local/schemas/sharepoint-lists-v1.json",
+  "siteTitle": "One Stop Client Hub",
+  "lists": [
+    {
+      "title": "Centers",
+      "template": "GenericList",
+      "columns": [
+        { "name": "CenterCode", "type": "Text", "required": true, "indexed": true },
+        { "name": "Address", "type": "Note" },
+        { "name": "Phone", "type": "Text" },
+        { "name": "TimeZone", "type": "Choice", "choices": ["Mountain", "Central"] },
+        { "name": "Active", "type": "Boolean", "default": true }
+      ]
+    },
+    {
+      "title": "Payers",
+      "template": "GenericList",
+      "columns": [
+        { "name": "PayerType", "type": "Choice", "choices": ["Medicaid", "Medicare", "Private", "Other"] },
+        { "name": "PayerCode", "type": "Text" },
+        { "name": "Active", "type": "Boolean", "default": true }
+      ]
+    },
+    {
+      "title": "Clients",
+      "template": "GenericList",
+      "columns": [
+        { "name": "ClientNumber", "type": "Text", "required": true, "indexed": true },
+        { "name": "FirstName", "type": "Text", "required": true },
+        { "name": "LastName", "type": "Text", "required": true },
+        { "name": "PreferredName", "type": "Text" },
+        { "name": "DateOfBirth", "type": "DateTime", "dateOnly": true },
+        { "name": "Gender", "type": "Choice", "choices": ["Female", "Male", "NonBinary", "Undisclosed", "Other"] },
+        { "name": "Status", "type": "Choice", "choices": ["Active", "OnHold", "Discharged", "Prospective"], "indexed": true },
+        { "name": "Center", "type": "Lookup", "lookupList": "Centers", "lookupField": "Title" },
+        { "name": "EnrollmentDate", "type": "DateTime", "dateOnly": true },
+        { "name": "DischargeDate", "type": "DateTime", "dateOnly": true },
+        { "name": "MedicaidID", "type": "Text" },
+        { "name": "MedicareID", "type": "Text" },
+        { "name": "PrimaryPayer", "type": "Lookup", "lookupList": "Payers", "lookupField": "Title" },
+        { "name": "SecondaryPayer", "type": "Lookup", "lookupList": "Payers", "lookupField": "Title" },
+        { "name": "DiagnosisPrimary", "type": "Note" },
+        { "name": "Allergies", "type": "Note" },
+        { "name": "DietaryNeeds", "type": "Note" },
+        { "name": "MobilityLevel", "type": "Choice", "choices": ["Independent", "Assist", "Walker", "Wheelchair", "Other"] },
+        { "name": "PhotoConsent", "type": "Boolean" },
+        { "name": "PrimaryLanguage", "type": "Choice", "choices": ["English", "Spanish", "Other"] },
+        { "name": "AddressLine1", "type": "Text" },
+        { "name": "City", "type": "Text" },
+        { "name": "State", "type": "Text" },
+        { "name": "PostalCode", "type": "Text" },
+        { "name": "Phone", "type": "Text" },
+        { "name": "Email", "type": "Text" },
+        { "name": "PhysicianName", "type": "Text" },
+        { "name": "PhysicianPhone", "type": "Text" },
+        { "name": "CaseManager", "type": "Text" },
+        { "name": "CaseManagerPhone", "type": "Text" },
+        { "name": "AuthorizedDays", "type": "MultiChoice", "choices": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"] },
+        { "name": "AuthorizedHoursPerDay", "type": "Number" },
+        { "name": "TransportNeeded", "type": "Boolean" },
+        { "name": "TransportNotes", "type": "Note" },
+        { "name": "SourceSystemId", "type": "Text", "indexed": true },
+        { "name": "DocumentFolderUrl", "type": "URL" },
+        { "name": "LastSyncedAt", "type": "DateTime" },
+        { "name": "NotesSummary", "type": "Note" }
+      ],
+      "views": [
+        {
+          "title": "Active Clients",
+          "query": "<Where><Eq><FieldRef Name='Status' /><Value Type='Choice'>Active</Value></Eq></Where>",
+          "viewFields": ["ClientNumber", "Title", "Center", "Status", "TransportNeeded", "Phone"]
+        },
+        {
+          "title": "Billing Medicaid",
+          "query": "<Where><Neq><FieldRef Name='Status' /><Value Type='Choice'>Prospective</Value></Neq></Where>",
+          "viewFields": ["ClientNumber", "Title", "MedicaidID", "DateOfBirth", "PrimaryPayer", "Status"],
+          "audience": "Billing"
+        }
+      ]
+    },
+    {
+      "title": "EmergencyContacts",
+      "template": "GenericList",
+      "columns": [
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title", "required": true },
+        { "name": "Relationship", "type": "Choice", "choices": ["Spouse", "Child", "Guardian", "Sibling", "Friend", "Other"] },
+        { "name": "PhonePrimary", "type": "Text", "required": true },
+        { "name": "PhoneSecondary", "type": "Text" },
+        { "name": "Email", "type": "Text" },
+        { "name": "IsPrimary", "type": "Boolean" },
+        { "name": "CanPickup", "type": "Boolean" },
+        { "name": "Priority", "type": "Number" }
+      ]
+    },
+    {
+      "title": "Attendance",
+      "template": "GenericList",
+      "columns": [
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title", "required": true },
+        { "name": "ClientNumber", "type": "Text", "indexed": true },
+        { "name": "AttendanceDate", "type": "DateTime", "dateOnly": true, "required": true, "indexed": true },
+        { "name": "Center", "type": "Lookup", "lookupList": "Centers", "lookupField": "Title" },
+        { "name": "Status", "type": "Choice", "choices": ["Present", "Absent", "Excused", "Holiday", "Partial"], "indexed": true },
+        { "name": "CheckInTime", "type": "DateTime" },
+        { "name": "CheckOutTime", "type": "DateTime" },
+        { "name": "HoursAttended", "type": "Number" },
+        { "name": "MealProvided", "type": "Boolean" },
+        { "name": "TransportIn", "type": "Boolean" },
+        { "name": "TransportOut", "type": "Boolean" },
+        { "name": "RecordedBy", "type": "User" },
+        { "name": "Source", "type": "Choice", "choices": ["Manual", "CheckInApp", "Import"] },
+        { "name": "SourceSystemId", "type": "Text", "indexed": true },
+        { "name": "Notes", "type": "Note" }
+      ]
+    },
+    {
+      "title": "Assessments",
+      "template": "GenericList",
+      "columns": [
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title", "required": true },
+        { "name": "AssessmentType", "type": "Choice", "choices": ["Initial", "Annual", "Nursing", "OT", "PT", "Social", "Other"] },
+        { "name": "AssessmentDate", "type": "DateTime", "dateOnly": true },
+        { "name": "Assessor", "type": "Text" },
+        { "name": "ScoreOrLevel", "type": "Text" },
+        { "name": "NextDueDate", "type": "DateTime", "dateOnly": true, "indexed": true },
+        { "name": "Status", "type": "Choice", "choices": ["Draft", "Final", "Archived"] },
+        { "name": "DocumentLink", "type": "URL" },
+        { "name": "Summary", "type": "Note" },
+        { "name": "SourceSystemId", "type": "Text" }
+      ]
+    },
+    {
+      "title": "CarePlans",
+      "template": "GenericList",
+      "columns": [
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title", "required": true },
+        { "name": "EffectiveDate", "type": "DateTime", "dateOnly": true },
+        { "name": "ReviewDate", "type": "DateTime", "dateOnly": true },
+        { "name": "Status", "type": "Choice", "choices": ["Draft", "PendingApproval", "Active", "Expired"], "indexed": true },
+        { "name": "Author", "type": "User" },
+        { "name": "ApprovedBy", "type": "User" },
+        { "name": "ApprovedDate", "type": "DateTime", "dateOnly": true },
+        { "name": "DocumentLink", "type": "URL" },
+        { "name": "Summary", "type": "Note" },
+        { "name": "SourceSystemId", "type": "Text" }
+      ]
+    },
+    {
+      "title": "CarePlanGoals",
+      "template": "GenericList",
+      "columns": [
+        { "name": "CarePlan", "type": "Lookup", "lookupList": "CarePlans", "lookupField": "Title", "required": true },
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title" },
+        { "name": "Domain", "type": "Choice", "choices": ["ADLs", "Social", "Cognitive", "Health", "Other"] },
+        { "name": "TargetDate", "type": "DateTime", "dateOnly": true },
+        { "name": "Status", "type": "Choice", "choices": ["NotStarted", "InProgress", "Met", "Discontinued"] },
+        { "name": "ProgressNotes", "type": "Note" }
+      ]
+    },
+    {
+      "title": "BillingRecords",
+      "template": "GenericList",
+      "columns": [
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title", "required": true },
+        { "name": "ClientNumber", "type": "Text", "indexed": true },
+        { "name": "ServiceDate", "type": "DateTime", "dateOnly": true, "indexed": true },
+        { "name": "BillingPeriodStart", "type": "DateTime", "dateOnly": true },
+        { "name": "BillingPeriodEnd", "type": "DateTime", "dateOnly": true },
+        { "name": "Payer", "type": "Lookup", "lookupList": "Payers", "lookupField": "Title" },
+        { "name": "ServiceCode", "type": "Text" },
+        { "name": "Units", "type": "Number" },
+        { "name": "UnitRate", "type": "Currency" },
+        { "name": "Amount", "type": "Currency" },
+        { "name": "Status", "type": "Choice", "choices": ["Draft", "Ready", "Submitted", "Paid", "Denied", "Adjusted"], "indexed": true },
+        { "name": "ClaimNumber", "type": "Text" },
+        { "name": "DenialReason", "type": "Note" },
+        { "name": "PaidDate", "type": "DateTime", "dateOnly": true },
+        { "name": "PaidAmount", "type": "Currency" },
+        { "name": "Center", "type": "Lookup", "lookupList": "Centers", "lookupField": "Title" },
+        { "name": "SourceSystemId", "type": "Text", "indexed": true },
+        { "name": "Notes", "type": "Note" }
+      ]
+    },
+    {
+      "title": "ClientNotes",
+      "template": "GenericList",
+      "columns": [
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title", "required": true },
+        { "name": "NoteDate", "type": "DateTime" },
+        { "name": "NoteType", "type": "Choice", "choices": ["Clinical", "Behavioral", "Family", "Ops", "Billing"] },
+        { "name": "Body", "type": "Note", "required": true },
+        { "name": "Author", "type": "User" },
+        { "name": "IsConfidential", "type": "Boolean" },
+        { "name": "SourceSystemId", "type": "Text" }
+      ]
+    },
+    {
+      "title": "Incidents",
+      "template": "GenericList",
+      "columns": [
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title" },
+        { "name": "IncidentDate", "type": "DateTime", "required": true },
+        { "name": "Location", "type": "Choice", "choices": ["Facility", "Transport", "Community", "Other"] },
+        { "name": "IncidentType", "type": "Choice", "choices": ["Fall", "Seizure", "Elopement", "MedError", "Injury", "Other"] },
+        { "name": "Severity", "type": "Choice", "choices": ["Low", "Medium", "High", "Critical"], "indexed": true },
+        { "name": "Description", "type": "Note" },
+        { "name": "ImmediateAction", "type": "Note" },
+        { "name": "ReportedBy", "type": "User" },
+        { "name": "Witnesses", "type": "Note" },
+        { "name": "FamilyNotified", "type": "Boolean" },
+        { "name": "FamilyNotifiedAt", "type": "DateTime" },
+        { "name": "RegulatoryReportRequired", "type": "Boolean" },
+        { "name": "FollowUpStatus", "type": "Choice", "choices": ["Open", "InProgress", "Closed"] },
+        { "name": "DocumentFolderUrl", "type": "URL" },
+        { "name": "LinkedSOP", "type": "URL" }
+      ]
+    },
+    {
+      "title": "TransportTrips",
+      "template": "GenericList",
+      "columns": [
+        { "name": "TripDate", "type": "DateTime", "dateOnly": true, "indexed": true },
+        { "name": "Direction", "type": "Choice", "choices": ["Pickup", "Dropoff"] },
+        { "name": "Driver", "type": "Text" },
+        { "name": "VehicleId", "type": "Text" },
+        { "name": "Client", "type": "Lookup", "lookupList": "Clients", "lookupField": "Title" },
+        { "name": "ScheduledTime", "type": "DateTime" },
+        { "name": "ActualTime", "type": "DateTime" },
+        { "name": "Miles", "type": "Number" },
+        { "name": "Status", "type": "Choice", "choices": ["Scheduled", "Completed", "NoShow", "Cancelled"] },
+        { "name": "Notes", "type": "Note" }
+      ]
+    },
+    {
+      "title": "ImportLog",
+      "template": "GenericList",
+      "columns": [
+        { "name": "Entity", "type": "Choice", "choices": ["Clients", "Attendance", "Billing", "Assessments", "Notes", "Documents", "Other"] },
+        { "name": "FileName", "type": "Text" },
+        { "name": "RowsRead", "type": "Number" },
+        { "name": "RowsSucceeded", "type": "Number" },
+        { "name": "RowsFailed", "type": "Number" },
+        { "name": "StartedAt", "type": "DateTime" },
+        { "name": "CompletedAt", "type": "DateTime" },
+        { "name": "Status", "type": "Choice", "choices": ["Running", "Success", "Failed", "Partial"] },
+        { "name": "ErrorSummary", "type": "Note" }
+      ]
+    }
+  ]
+}

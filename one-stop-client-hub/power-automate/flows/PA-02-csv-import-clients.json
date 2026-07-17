@@ -1,0 +1,95 @@
+{
+  "flowId": "PA-02",
+  "displayName": "CSV Import — Clients",
+  "description": "When clients_*.csv lands in 01-Staging/Imports/ready, upsert Clients by SourceSystemId/ClientNumber and write ImportLog.",
+  "trigger": {
+    "type": "SharePoint.WhenFileCreated",
+    "site": "@environmentVariables['ClientHubSiteUrl']",
+    "library": "01-Staging",
+    "folder": "Imports/ready",
+    "fileNameFilter": "clients_"
+  },
+  "steps": [
+    {
+      "name": "Log_Start",
+      "type": "SharePoint.CreateItem",
+      "list": "ImportLog",
+      "fields": {
+        "Title": "Clients import @{utcNow()}",
+        "Entity": "Clients",
+        "FileName": "@{triggerOutputs()?['body/{FilenameWithExtension}']}",
+        "StartedAt": "@{utcNow()}",
+        "Status": "Running"
+      }
+    },
+    {
+      "name": "Get_File_Content",
+      "type": "SharePoint.GetFileContent"
+    },
+    {
+      "name": "Parse_Csv_To_Rows",
+      "type": "Custom",
+      "implementationOptions": [
+        "Office Script on Excel temp workbook",
+        "Azure Function ParseCsv",
+        "Manual convert CSV→JSON in Power Automate using 'Compose' + split (small files only)"
+      ],
+      "expectedRowSchema": {
+        "ClientNumber": "string",
+        "SourceSystemId": "string",
+        "FirstName": "string",
+        "LastName": "string",
+        "DateOfBirth": "date",
+        "Status": "string",
+        "CenterCode": "string",
+        "MedicaidID": "string"
+      }
+    },
+    {
+      "name": "For_Each_Row",
+      "type": "ApplyToEach",
+      "concurrency": 2,
+      "actions": [
+        {
+          "name": "Find_Existing",
+          "type": "SharePoint.GetItems",
+          "list": "Clients",
+          "filter": "SourceSystemId eq '@{items('For_Each_Row')?['SourceSystemId']}'"
+        },
+        {
+          "name": "Upsert",
+          "type": "Condition",
+          "ifEmpty": {
+            "type": "SharePoint.CreateItem",
+            "list": "Clients",
+            "mapFrom": "row",
+            "title": "@{items('For_Each_Row')?['LastName']}, @{items('For_Each_Row')?['FirstName']}"
+          },
+          "else": {
+            "type": "SharePoint.UpdateItem",
+            "nullSafe": ["MedicaidID", "DateOfBirth", "DiagnosisPrimary"],
+            "note": "Do not overwrite PHI fields with blanks"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Log_Complete",
+      "type": "SharePoint.UpdateItem",
+      "list": "ImportLog",
+      "fields": {
+        "RowsRead": "@{length(outputs('Parse_Csv_To_Rows'))}",
+        "RowsSucceeded": "@variables('SuccessCount')",
+        "RowsFailed": "@variables('FailCount')",
+        "CompletedAt": "@{utcNow()}",
+        "Status": "Success"
+      }
+    },
+    {
+      "name": "Move_File_Processed",
+      "type": "SharePoint.MoveFile",
+      "destination": "Imports/processed/@{formatDateTime(utcNow(),'yyyy-MM-dd')}/"
+    }
+  ],
+  "throttlingNotes": "Keep concurrency low. Prefer PnP PowerShell for >2000 client rows."
+}

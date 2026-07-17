@@ -1,0 +1,15 @@
+source_system,source_column,target_list,target_column,transform,required,notes
+myadultdaycare.com,AttendanceID,Attendance,SourceSystemId,trim,yes,
+myadultdaycare.com,ClientID,Attendance,ClientNumber,lookup_clientnumber,yes,Resolve via Clients.SourceSystemId
+myadultdaycare.com,Date,Attendance,AttendanceDate,date_iso,yes,
+myadultdaycare.com,Location,Attendance,Center,map_center_lookup,no,
+myadultdaycare.com,Status,Attendance,Status,map_attendance_status,yes,Present|Absent|Excused|Holiday|Partial
+myadultdaycare.com,CheckIn,Attendance,CheckInTime,datetime_iso,no,
+myadultdaycare.com,CheckOut,Attendance,CheckOutTime,datetime_iso,no,
+myadultdaycare.com,Hours,Attendance,HoursAttended,number,no,Also compute from check-in/out
+myadultdaycare.com,Meal,Attendance,MealProvided,bool,no,
+myadultdaycare.com,TransportIn,Attendance,TransportIn,bool,no,
+myadultdaycare.com,TransportOut,Attendance,TransportOut,bool,no,
+myadultdaycare.com,Notes,Attendance,Notes,trim,no,
+myadultdaycare.com,attendance_hours,Attendance,HoursAttended,number,no,Roadmap sample column alias
+myadultdaycare.com,cost_per_client,BillingRecords,Amount,currency,no,If cost exported on attendance file — route to billing map instead

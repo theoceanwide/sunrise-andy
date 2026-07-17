@@ -1,0 +1,10 @@
+SourceSystemId,ClientNumber,AttendanceDate,CenterCode,Status,CheckInTime,CheckOutTime,HoursAttended,MealProvided,TransportIn,TransportOut,Source,Notes
+ATT-20260701-10021,C-10021,2026-07-01,DEN,Present,2026-07-01T08:05:00,2026-07-01T14:10:00,6.08,true,true,true,Import,
+ATT-20260701-10022,C-10022,2026-07-01,DEN,Present,2026-07-01T08:20:00,2026-07-01T14:00:00,5.67,true,true,true,Import,
+ATT-20260701-10023,C-10023,2026-07-01,HOU,Absent,,,,,,false,false,false,Import,Family vacation
+ATT-20260702-10021,C-10021,2026-07-02,DEN,Present,2026-07-02T08:00:00,2026-07-02T14:05:00,6.08,true,true,true,Import,
+ATT-20260702-10022,C-10022,2026-07-02,DEN,Excused,,,,,,false,false,false,Import,Medical appointment
+ATT-20260702-10023,C-10023,2026-07-02,HOU,Present,2026-07-02T08:30:00,2026-07-02T13:30:00,5.00,true,false,false,Import,
+ATT-20260703-10021,C-10021,2026-07-03,DEN,Present,2026-07-03T08:10:00,2026-07-03T14:00:00,5.83,true,true,true,Import,
+ATT-20260703-10022,C-10022,2026-07-03,DEN,Present,2026-07-03T08:15:00,2026-07-03T14:15:00,6.00,true,true,true,Import,
+ATT-20260703-10023,C-10023,2026-07-03,HOU,Present,2026-07-03T08:25:00,2026-07-03T13:25:00,5.00,true,false,false,Import,

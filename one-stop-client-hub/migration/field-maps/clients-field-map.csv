@@ -1,0 +1,31 @@
+source_system,source_column,target_list,target_column,transform,required,notes
+myadultdaycare.com,ClientID,Clients,SourceSystemId,trim,yes,Stable vendor ID
+myadultdaycare.com,ClientNumber,Clients,ClientNumber,trim,yes,Business key; generate if missing
+myadultdaycare.com,FirstName,Clients,FirstName,proper_case,yes,
+myadultdaycare.com,LastName,Clients,LastName,proper_case,yes,
+myadultdaycare.com,PreferredName,Clients,PreferredName,trim,no,
+myadultdaycare.com,DOB,Clients,DateOfBirth,date_iso,yes,PHI
+myadultdaycare.com,Gender,Clients,Gender,map_gender,no,Female|Male|Other|Undisclosed
+myadultdaycare.com,Status,Clients,Status,map_status,yes,Active|OnHold|Discharged|Prospective
+myadultdaycare.com,Location,Clients,Center,map_center_lookup,yes,DEN|HOU
+myadultdaycare.com,AdmitDate,Clients,EnrollmentDate,date_iso,no,
+myadultdaycare.com,DischargeDate,Clients,DischargeDate,date_iso,no,
+myadultdaycare.com,MedicaidNumber,Clients,MedicaidID,trim,no,PHI — Billing view only
+myadultdaycare.com,MedicareNumber,Clients,MedicareID,trim,no,
+myadultdaycare.com,PrimaryPayor,Clients,PrimaryPayer,map_payer_lookup,no,
+myadultdaycare.com,Diagnosis,Clients,DiagnosisPrimary,trim,no,
+myadultdaycare.com,Allergies,Clients,Allergies,trim,no,
+myadultdaycare.com,Diet,Clients,DietaryNeeds,trim,no,
+myadultdaycare.com,Mobility,Clients,MobilityLevel,map_mobility,no,
+myadultdaycare.com,Address1,Clients,AddressLine1,trim,no,
+myadultdaycare.com,City,Clients,City,trim,no,
+myadultdaycare.com,State,Clients,State,upper,no,
+myadultdaycare.com,Zip,Clients,PostalCode,trim,no,
+myadultdaycare.com,Phone,Clients,Phone,phone_normalize,no,
+myadultdaycare.com,Physician,Clients,PhysicianName,trim,no,
+myadultdaycare.com,PhysicianPhone,Clients,PhysicianPhone,phone_normalize,no,
+myadultdaycare.com,CaseManager,Clients,CaseManager,trim,no,
+myadultdaycare.com,AuthorizedDays,Clients,AuthorizedDays,split_days,no,Mon;Tue;Wed
+myadultdaycare.com,AuthorizedHours,Clients,AuthorizedHoursPerDay,number,no,
+myadultdaycare.com,NeedsTransport,Clients,TransportNeeded,bool,no,
+myadultdaycare.com,TransportNotes,Clients,TransportNotes,trim,no,
