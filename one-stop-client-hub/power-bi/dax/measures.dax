@@ -1,0 +1,135 @@
+-- One Stop Client Hub — core DAX measures
+-- Wire tables: DimDate, DimClient, DimCenter, FactAttendance, FactBilling, FactTransport, FactAssessments
+-- Capacity / labor inputs can come from a small SharePoint list ManualKpis if not in source system.
+
+-- ========== Attendance / Census ==========
+
+Present Count =
+CALCULATE (
+    COUNTROWS ( FactAttendance ),
+    FactAttendance[Status] IN { "Present", "Partial" }
+)
+
+Absent Count =
+CALCULATE (
+    COUNTROWS ( FactAttendance ),
+    FactAttendance[Status] = "Absent"
+)
+
+Authorized Client Days =
+-- Prefer a FactAuthorization table; fallback: distinct active clients * working days in filter
+VAR WorkingDays =
+    CALCULATE (
+        COUNTROWS ( DimDate ),
+        DimDate[IsWeekend] = FALSE (),
+        DimDate[IsHoliday] = FALSE ()
+    )
+VAR ActiveClients =
+    CALCULATE (
+        DISTINCTCOUNT ( DimClient[ClientNumber] ),
+        DimClient[Status] = "Active"
+    )
+RETURN
+    WorkingDays * ActiveClients
+
+Occupancy Pct =
+DIVIDE ( [Present Count], [Authorized Client Days] )
+
+Attendance Hours =
+SUM ( FactAttendance[HoursAttended] )
+
+-- ========== Billing ==========
+
+Billed Amount =
+SUM ( FactBilling[Amount] )
+
+Paid Amount =
+SUM ( FactBilling[PaidAmount] )
+
+Denied Amount =
+CALCULATE (
+    SUM ( FactBilling[Amount] ),
+    FactBilling[Status] = "Denied"
+)
+
+Billing Denial Rate =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( FactBilling ), FactBilling[Status] = "Denied" ),
+    COUNTROWS ( FactBilling )
+)
+
+Cost Per Client Day =
+-- Uses billed amount / present days; swap to actual cost table when available
+DIVIDE ( [Billed Amount], [Present Count] )
+
+-- ========== Labor (requires ManualKpis or payroll feed) ==========
+
+Labor Cost =
+SUM ( ManualKpis[LaborCost] )
+
+Labor Pct =
+DIVIDE ( [Labor Cost], [Billed Amount] )
+
+-- ========== Transport ==========
+
+Transport Trips Scheduled =
+CALCULATE (
+    COUNTROWS ( FactTransport ),
+    FactTransport[Status] <> "Cancelled"
+)
+
+Transport Trips Completed =
+CALCULATE (
+    COUNTROWS ( FactTransport ),
+    FactTransport[Status] = "Completed"
+)
+
+Transport Utilization =
+DIVIDE ( [Transport Trips Completed], [Transport Trips Scheduled] )
+
+Transport Miles =
+SUM ( FactTransport[Miles] )
+
+Transport No Show Rate =
+DIVIDE (
+    CALCULATE ( COUNTROWS ( FactTransport ), FactTransport[Status] = "NoShow" ),
+    [Transport Trips Scheduled]
+)
+
+-- ========== Compliance ==========
+
+Assessments Overdue =
+CALCULATE (
+    COUNTROWS ( FactAssessments ),
+    FactAssessments[NextDueDate] < TODAY (),
+    FactAssessments[Status] <> "Archived",
+    RELATED ( DimClient[Status] ) = "Active"
+)
+
+Care Plans Pending Approval =
+CALCULATE (
+    COUNTROWS ( CarePlans ),
+    CarePlans[Status] = "PendingApproval"
+)
+
+Open High Incidents =
+CALCULATE (
+    COUNTROWS ( FactIncidents ),
+    FactIncidents[Severity] IN { "High", "Critical" },
+    FactIncidents[FollowUpStatus] <> "Closed"
+)
+
+-- ========== Referrals ==========
+
+Referral Conversion =
+DIVIDE (
+    CALCULATE (
+        DISTINCTCOUNT ( DimClient[ClientNumber] ),
+        DimClient[Status] = "Active",
+        DimClient[EnrollmentDate] <> BLANK ()
+    ),
+    CALCULATE (
+        DISTINCTCOUNT ( DimClient[ClientNumber] ),
+        DimClient[Status] IN { "Active", "Prospective", "Discharged" }
+    )
+)

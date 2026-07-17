@@ -1,0 +1,58 @@
+OneStopClientHub/
+├── Site Pages/
+│   ├── Home.aspx
+│   ├── How-To-Attendance.aspx
+│   └── Compliance-Index.aspx
+├── Lists/
+│   ├── Centers
+│   ├── Payers
+│   ├── Clients
+│   ├── EmergencyContacts
+│   ├── Attendance
+│   ├── Assessments
+│   ├── CarePlans
+│   ├── CarePlanGoals
+│   ├── BillingRecords
+│   ├── ClientNotes
+│   ├── Incidents
+│   ├── Medications          (optional)
+│   ├── TransportTrips
+│   ├── Staff                (optional)
+│   └── ImportLog
+├── ClientDocuments/         [Confidential – PHI]
+│   ├── DEN/
+│   │   └── {ClientNumber} - {Last}, {First}/
+│   │       ├── 01-Intake/
+│   │       ├── 02-Assessments/
+│   │       ├── 03-CarePlans/
+│   │       ├── 04-Consents/
+│   │       ├── 05-Medical/
+│   │       ├── 06-Billing/
+│   │       ├── 07-Incidents/
+│   │       └── 08-Correspondence/
+│   └── HOU/
+│       └── (same client folder template)
+├── 01-Staging/              [Admins + Automation only]
+│   └── Imports/
+│       ├── raw/YYYY-MM-DD/
+│       ├── working/
+│       ├── ready/
+│       ├── processed/YYYY-MM-DD/
+│       └── failed/YYYY-MM-DD/
+├── 02-Compliance/
+│   ├── CDPHE/
+│   ├── HHSC/
+│   ├── Licensing/
+│   ├── Incident-Reports-Registry/
+│   ├── Medicaid-Audits/
+│   ├── Policies/
+│   └── Training-Evidence/
+├── 03-SOPs/
+│   ├── Transport/
+│   ├── Clinical/
+│   ├── Intake/
+│   ├── Program/
+│   ├── Kitchen/
+│   └── Billing/
+├── 04-Forms-Templates/
+└── 05-PowerBI-Exports/

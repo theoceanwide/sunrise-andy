@@ -1,0 +1,98 @@
+{
+  "flowId": "PA-01",
+  "displayName": "New Client Onboarding",
+  "description": "When a Clients list item is created, provision ClientDocuments folder tree, set DocumentFolderUrl, notify Nursing/Front Desk (no PHI in chat).",
+  "trigger": {
+    "type": "SharePoint.WhenItemCreated",
+    "site": "@environmentVariables['ClientHubSiteUrl']",
+    "list": "Clients"
+  },
+  "environmentVariables": [
+    "ClientHubSiteUrl",
+    "ClientDocumentsLibrary",
+    "TeamsNursingChatId",
+    "TeamsFrontDeskChatId"
+  ],
+  "steps": [
+    {
+      "name": "Init_Vars",
+      "type": "InitializeVariables",
+      "inputs": {
+        "ClientNumber": "@{triggerOutputs()?['body/ClientNumber']}",
+        "CenterCode": "@{triggerOutputs()?['body/Center/CenterCode']}",
+        "DisplayName": "@{triggerOutputs()?['body/LastName']}, @{triggerOutputs()?['body/FirstName']}",
+        "FolderName": "@{triggerOutputs()?['body/ClientNumber']} - @{triggerOutputs()?['body/LastName']}, @{triggerOutputs()?['body/FirstName']}"
+      }
+    },
+    {
+      "name": "Check_ClientNumber",
+      "type": "Condition",
+      "expression": "@not(empty(variables('ClientNumber')))",
+      "else": [
+        {
+          "name": "Notify_Admins_MissingKey",
+          "type": "Teams.PostMessage",
+          "message": "Client item created without ClientNumber. Fix list item ID @{triggerOutputs()?['body/ID']}."
+        },
+        { "type": "Terminate", "status": "Failed" }
+      ]
+    },
+    {
+      "name": "Create_Root_Folder",
+      "type": "SharePoint.CreateNewFolder",
+      "library": "@environmentVariables['ClientDocumentsLibrary']",
+      "path": "@{variables('CenterCode')}/@{variables('FolderName')}"
+    },
+    {
+      "name": "Create_Subfolders",
+      "type": "ApplyToEach",
+      "items": [
+        "01-Intake",
+        "02-Assessments",
+        "03-CarePlans",
+        "04-Consents",
+        "05-Medical",
+        "06-Billing",
+        "07-Incidents",
+        "08-Correspondence"
+      ],
+      "actions": [
+        {
+          "type": "SharePoint.CreateNewFolder",
+          "path": "@{variables('CenterCode')}/@{variables('FolderName')}/@{items('Create_Subfolders')}"
+        }
+      ]
+    },
+    {
+      "name": "Update_Client_FolderUrl",
+      "type": "SharePoint.UpdateItem",
+      "list": "Clients",
+      "id": "@triggerOutputs()?['body/ID']",
+      "fields": {
+        "DocumentFolderUrl": "@{outputs('Create_Root_Folder')?['body/Path']}"
+      }
+    },
+    {
+      "name": "Notify_Teams",
+      "type": "Teams.PostAdaptiveCard",
+      "targets": ["Nursing", "FrontDesk"],
+      "cardBody": {
+        "title": "New client enrolled",
+        "facts": [
+          { "title": "Name", "value": "@{variables('DisplayName')}" },
+          { "title": "Center", "value": "@{variables('CenterCode')}" },
+          { "title": "Client #", "value": "@{variables('ClientNumber')}" }
+        ],
+        "note": "Do not post Medicaid ID or DOB in Teams."
+      }
+    }
+  ],
+  "buildInDesigner": [
+    "1. Trigger: When an item is created — Clients",
+    "2. Condition ClientNumber not empty",
+    "3. Create new folder (and subfolders) under ClientDocuments/{CenterCode}/",
+    "4. Update item DocumentFolderUrl",
+    "5. Post message to Teams (name/center/number only)",
+    "6. Configure run after / scope for error email to Admins"
+  ]
+}

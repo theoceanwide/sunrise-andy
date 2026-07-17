@@ -1,0 +1,35 @@
+{
+  "flowId": "PA-07",
+  "displayName": "Incident High Severity Notify",
+  "trigger": {
+    "type": "SharePoint.WhenItemCreatedOrModified",
+    "list": "Incidents"
+  },
+  "condition": "@or(equals(triggerOutputs()?['body/Severity'], 'High'), equals(triggerOutputs()?['body/Severity'], 'Critical'), contains(createArray('Fall','Seizure','Elopement'), triggerOutputs()?['body/IncidentType']))",
+  "steps": [
+    {
+      "name": "Post_Teams_Urgent",
+      "type": "Teams.PostMessage",
+      "message": "High-priority incident logged. Open item: @{triggerOutputs()?['body/{Link}']}. Type=@{triggerOutputs()?['body/IncidentType']} Severity=@{triggerOutputs()?['body/Severity']}. Do not paste clinical details in chat."
+    },
+    {
+      "name": "Email_Leadership_LinkOnly",
+      "type": "Outlook.SendEmail",
+      "to": "@environmentVariables['IncidentNotifyEmails']",
+      "subject": "Incident alert — @{triggerOutputs()?['body/IncidentType']}",
+      "body": "A high-priority incident was logged in Client Hub. Open the SharePoint item for details (PHI). Link: @{triggerOutputs()?['body/{Link}']}"
+    },
+    {
+      "name": "If_Regulatory",
+      "type": "Condition",
+      "expression": "@equals(triggerOutputs()?['body/RegulatoryReportRequired'], true)",
+      "then": [
+        {
+          "type": "Planner.CreateTask",
+          "title": "Regulatory report due — incident @{triggerOutputs()?['body/ID']}",
+          "dueInHours": 24
+        }
+      ]
+    }
+  ]
+}
